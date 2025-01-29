@@ -1,9 +1,14 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ProductList.css'
+import { useDispatch, useSelector } from 'react-redux';
+import { addItem } from './CartSlice'; // Импортируем addItem
 import CartItem from './CartItem';
 function ProductList() {
     const [showCart, setShowCart] = useState(false); 
     const [addedToCart, setAddedToCart] = useState({}); // Для отслеживания добавленных товаров
+    const cart = useSelector((state) => state.cart.items); // Получаем состояние корзины из Redux
+    const dispatch = useDispatch();
+  
 
     const plantsArray = [
         {
@@ -233,10 +238,7 @@ function ProductList() {
     textDecoration: 'none',
    }
    const handleAddToCart = (plant) => {
-    setAddedToCart((prevState) => ({
-      ...prevState,
-      [plant.name]: true, 
-    }));
+    dispatch(addItem(plant)); // Добавляем товар в корзину через Redux
   };
 
   const handleCartClick = (e) => {
@@ -260,7 +262,7 @@ function ProductList() {
           </a>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '1100px' }}>
-          <div><a href="#" onClick={handleCartClick} style={{ color: 'white', fontSize: '30px', textDecoration: 'none' }}>Cart</a></div>
+          <div><a href="#" onClick={handleCartClick} style={{ color: 'white', fontSize: '30px', textDecoration: 'none' }}>Cart ({cart.length})</a></div>
         </div>
       </div>
 
@@ -280,7 +282,7 @@ function ProductList() {
                       className="product-button" 
                       onClick={() => handleAddToCart(plant)}
                     >
-                      {addedToCart[plant.name] ? 'Added to Cart' : 'Add to Cart'}
+                      {cart.some(item => item.name === plant.name) ? 'Added to Cart' : 'Add to Cart'}
                     </button>
                   </div>
                 ))}
